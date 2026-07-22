@@ -1,0 +1,5 @@
+Paracetamol,20
+Vitamin C,8
+Bandage,15
+Pain Killer,5
+Antibiotic,12
