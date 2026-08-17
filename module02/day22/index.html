@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETB Currency Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --surface-color: #ffffff;
+      --surface-subtle: #f8fafc;
+      --border-color: #e2e8f0;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .app-header {
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      font-size: 2rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .status-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+      background-color: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+
+    .status-message.success {
+      background-color: rgba(22, 101, 52, 0.2);
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.3);
+    }
+
+    .status-message.error {
+      background-color: rgba(153, 27, 27, 0.2);
+      color: #f87171;
+      border-color: rgba(248, 113, 113, 0.3);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .grid-layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-group label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-main);
+      outline: none;
+      background: var(--surface-subtle);
+      transition: var(--transition);
+    }
+
+    input[type="number"] { padding-right: 50px; }
+
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .currency-tag {
+      position: absolute;
+      right: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .primary-btn {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .primary-btn:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .secondary-btn {
+      background-color: #eff6ff;
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+
+    .secondary-btn:hover:not(:disabled) { background-color: #dbeafe; }
+
+    .text-btn {
+      background: transparent;
+      color: #ef4444;
+      font-size: 0.8rem;
+    }
+
+    .text-btn:hover { background: #fee2e2; }
+
+    .btn-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 14px;
+      background: #eff6ff;
+      border-radius: var(--radius-md);
+      border: 1px solid #bfdbfe;
+      text-align: center;
+      color: var(--primary-hover);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .result-box small {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .result-box.hidden { display: none; }
+
+    .list-container {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .list-info strong { font-size: 0.9rem; color: var(--text-main); }
+    .list-info span { color: var(--primary-color); font-weight: 600; font-size: 0.85rem; }
+    .timestamp { color: var(--text-muted); font-size: 0.75rem; }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .delete-btn:hover { color: #ef4444; }
+
+    .empty-list {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 12px 0;
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app-container">
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">🇪🇹</div>
+        <div>
+          <h1>Currency Converter</h1>
+          <p class="subtitle">Live exchange rates relative to Ethiopian Birr (ETB)</p>
+        </div>
+      </div>
+    </header>
+
+    <div id="status-line" class="status-message info" aria-live="polite">
+      <span class="status-dot"></span>
+      <span class="status-text">Loading application...</span>
+    </div>
+
+    <div class="grid-layout">
+      <section class="card">
+        <div class="card-header">
+          <h2>Convert Amount</h2>
+        </div>
+
+        <form id="conversion-form" class="form-grid">
+          <div class="field-group">
+            <label for="amount-input">Amount (ETB)</label>
+            <div class="input-wrapper">
+              <input type="number" id="amount-input" placeholder="0.00" min="0" step="any" required />
+              <span class="currency-tag">ETB</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="currency-select">Target Currency</label>
+            <select id="currency-select" disabled>
+              <option value="">Loading rates...</option>
+            </select>
+          </div>
+
+          <button type="submit" id="convert-btn" class="btn primary-btn" disabled>
+            <span>Convert Now</span>
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </form>
+
+        <div id="conversion-result" class="result-box hidden"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Watchlist</h2>
+          <button type="button" id="add-watchlist-btn" class="btn secondary-btn" disabled>+ Add</button>
+        </div>
+        <ul id="watchlist-container" class="list-container"></ul>
+      </section>
+
+      <section class="card full-width">
+        <div class="card-header">
+          <h2>Conversion History</h2>
+          <button type="button" id="clear-history-btn" class="btn text-btn">Clear History</button>
+        </div>
+        <ul id="history-container" class="list-container history-grid"></ul>
+      </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
